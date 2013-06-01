@@ -8,6 +8,8 @@
 
 #import "NSDateFormatter+HCReusableDates.h"
 
+#import "NSLocale+HCStandardLocales.h"
+
 const NSTimeInterval HCTimeIntervalMinute = 60.0f;
 const NSTimeInterval HCTimeIntervalHour   = 60.0f * HCTimeIntervalMinute;
 const NSTimeInterval HCTimeIntervalDay    = 24.0f * HCTimeIntervalHour;
@@ -15,36 +17,33 @@ const NSTimeInterval HCTimeIntervalWeek   =  7.0f * HCTimeIntervalDay;
 
 @implementation NSDateFormatter (HCReusableDates)
 
-static NSCache *cache;
+static NSCache *NSDateFormatterReusableDatesCache;
 
 + (void)purgeDateFormatterCache
 {
-    [cache removeAllObjects];
+    [NSDateFormatterReusableDatesCache removeAllObjects];
 }
 
 + (NSDateFormatter *)dateFormatterWithFormat:(NSString *)format
 {
     NSParameterAssert(format.length);
     
-    static NSLocale *locale;
-    
     static dispatch_once_t cacheOnceToken;
     dispatch_once(&cacheOnceToken, ^{
-        cache  = [[NSCache alloc] init];
-        locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
+        NSDateFormatterReusableDatesCache  = [[NSCache alloc] init];
     });
     
-    NSDateFormatter *dateFormatter = [cache objectForKey:format];
+    NSDateFormatter *dateFormatter = [NSDateFormatterReusableDatesCache objectForKey:format];
     
     if (!dateFormatter)
     {
         NSString *formatString = [format copy];
         
         dateFormatter = [[NSDateFormatter alloc] init];
-        dateFormatter.locale = locale;
+        dateFormatter.locale = [NSLocale enUSPOSIXLocale];
         dateFormatter.dateFormat = formatString;
         
-        [cache setObject:dateFormatter forKey:formatString];
+        [NSDateFormatterReusableDatesCache setObject:dateFormatter forKey:formatString];
     }
     
     return dateFormatter;
