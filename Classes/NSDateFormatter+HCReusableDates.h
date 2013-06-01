@@ -15,4 +15,7 @@ extern const NSTimeInterval HCTimeIntervalWeek;
 
 @interface NSDateFormatter (HCReusableDates)
 
++ (void)purgeDateFormatterCache;
++ (NSDateFormatter *)dateFormatterWithFormat:(NSString *)format;
+
 @end

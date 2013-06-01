@@ -15,11 +15,17 @@ const NSTimeInterval HCTimeIntervalWeek   =  7.0f * HCTimeIntervalDay;
 
 @implementation NSDateFormatter (HCReusableDates)
 
+static NSCache *cache;
+
++ (void)purgeDateFormatterCache
+{
+    [cache removeAllObjects];
+}
+
 + (NSDateFormatter *)dateFormatterWithFormat:(NSString *)format
 {
     NSParameterAssert(format.length);
     
-    static NSCache  *cache;
     static NSLocale *locale;
     
     static dispatch_once_t cacheOnceToken;
@@ -28,12 +34,12 @@ const NSTimeInterval HCTimeIntervalWeek   =  7.0f * HCTimeIntervalDay;
         locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
     });
     
-    NSString *formatString = [format copy];
-    
-    NSDateFormatter *dateFormatter = [cache objectForKey:formatString];
+    NSDateFormatter *dateFormatter = [cache objectForKey:format];
     
     if (!dateFormatter)
     {
+        NSString *formatString = [format copy];
+        
         dateFormatter = [[NSDateFormatter alloc] init];
         dateFormatter.locale = locale;
         dateFormatter.dateFormat = formatString;
