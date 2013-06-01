@@ -26,4 +26,7 @@ As long as the cache hasn't been cleared the call will return the same formatter
     NSDateFormatter *dateFormatter3 = [NSDateFormatter dateFormatterWithFormat:format];
     
     NSAssert(dateFormatter1 != dateFormatter3, @"As the cache has been purged a new date formatter has been created");
-    
+
+## Adds `enUSPOSIXLocale` to `NSLocale`
+
+This is just a convenience method to reuse `en_US_POSIX`.
